@@ -1,0 +1,35 @@
+# LLMs & Agentic Coding
+
+Lecture and exercise material. Lecture plan: [LLMs & Agentic Coding — Lecture and Exercise Plan](https://claude.ai/artifact/1wdg6bzmGcA6B4eaNd1PBZ).
+
+## Models
+
+| Role | Model | Runs |
+| --- | --- | --- |
+| Base | [allenai/OLMo-2-0425-1B](https://huggingface.co/allenai/OLMo-2-0425-1B) | Locally, 3 GB (BF16) |
+| Aligned | [allenai/OLMo-2-0425-1B-Instruct](https://huggingface.co/allenai/OLMo-2-0425-1B-Instruct) | Locally, 3 GB (BF16) |
+| Capable instruct model (hallucination demos, tool calling) | `qwen3-30b-a3b-instruct-2507` | [GWDG SAIA API](https://docs.hpc.gwdg.de/services/ai-services/saia/index.html) |
+
+The OLMo pair shares pretraining and tokenizer, so any difference between them comes from post-training.
+Qwen3.5-2B-Base is not used: given a plain instruction, it opens a `<think>` block and reasons like an assistant,
+which spoils the base-vs-aligned contrast.
+
+The API model was chosen from the SAIA models on 2 November 2026: it is fast (~160 tokens/s), has no hidden reasoning,
+returns logprobs, and still makes the mistakes Lecture 1 shows (invented parameters, letter counting, obscure facts, arithmetic).
+SAIA allows 2 requests per 10 s and 200 per hour per key; the notebook helper waits 5 s between requests.
+
+## Setup
+
+Each student needs a SAIA API key (requested through the KISSKI LLM service) in the environment variable `SAIA_API_KEY`.
+
+```bash
+python3 -m venv .venv
+.venv/bin/pip install -r requirements.txt
+.venv/bin/hf download allenai/OLMo-2-0425-1B
+.venv/bin/hf download allenai/OLMo-2-0425-1B-Instruct
+.venv/bin/jupyter lab
+```
+
+## Layout
+
+- `lectures/01_what_an_llm_does.ipynb`: Lecture 1 live demos
