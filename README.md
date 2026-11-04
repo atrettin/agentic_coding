@@ -16,7 +16,7 @@ which spoils the base-vs-aligned contrast.
 
 The API model was chosen from the SAIA models on 2 November 2026: it is fast (~160 tokens/s), has no hidden reasoning,
 returns logprobs, and still makes the mistakes Lecture 1 shows (invented parameters, letter counting, obscure facts, arithmetic).
-SAIA allows 2 requests per 10 s and 200 per hour per key; the notebook helper waits 5 s between requests.
+SAIA allows 10 requests per 10 s, 400 per hour and 800 per day per key (response headers, 4 November 2026); the notebook helper waits 1 s between requests.
 
 ## Setup
 
@@ -32,4 +32,7 @@ python3 -m venv .venv
 
 ## Layout
 
+- `llm_helpers.py`: helpers shared by all notebooks (model loading, SAIA client with rate limiting, token and attention views)
 - `lectures/01_what_an_llm_does.ipynb`: Lecture 1 live demos
+- `exercises/00_template.ipynb`: template and conventions for new exercises
+- `exercises/02_sampling_lab.ipynb`: temperature and top-p

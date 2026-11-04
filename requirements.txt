@@ -5,3 +5,4 @@ jupyterlab>=4.6
 ipykernel>=7.4
 matplotlib>=3.11
 openai>=3.42
+ipywidgets>=8.1
