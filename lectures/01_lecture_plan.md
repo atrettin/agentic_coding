@@ -88,17 +88,17 @@ Concepts introduced: token, vocabulary, next-token distribution, sampling, autor
 > Notes: A light, funny demo with a serious point: what looks like a trivial task for us is hard for the model, because its input is not what we see. Remember this when a coding model miscounts characters or columns. First slide to cut if the lecture runs long.
 
 ### 2.4 The output: a probability for every token `[DEMO]`
-- Bar chart: top 10 next tokens for the TUM sentence, with their probabilities.
+- Bar chart: top 10 next tokens for "The Technical University of Munich was founded in " (with a trailing space, so the next token starts the year), with their probabilities.
 - Note on the slide: "the model's whole output is this list, over the whole vocabulary".
 - Demo: `show_top`.
 
-> Notes: This is the key picture of the lecture. The model does not output an answer. It outputs a probability distribution over the vocabulary for the next token. Everything else is built around this.
+> Notes: This is the key picture of the lecture. The model does not output an answer. It outputs a probability distribution over the vocabulary for the next token. Everything else is built around this. Look at the shape: many years get almost the same probability. The base model has essentially no idea when TUM was founded, and the flat distribution shows it. (Correct: 1868.) The text it writes doesn't: sampling picks one of these years and states it as fact. Hold on to this; in Part 6 we colour answers by exactly this probability.
 
 ### 2.5 Generating = sampling, appending, repeating `[DEMO]`
 - Diagram: prompt → distribution → draw one token → append → new distribution → …
 - Demo: `generate_by_hand`, step by step, with the drawn token highlighted each time.
 
-> Notes: Generating text is a loop. Draw one token from the distribution, append it to the text, compute a new distribution for the extended text. Each new token is conditioned on everything before it, including the tokens the model wrote itself. Hence "generative" and "autoregressive". Note that the model can't take a token back once it has drawn it.
+> Notes: Generating text is a loop. Draw one token from the distribution, append it to the text, compute a new distribution for the extended text. Each new token is conditioned on everything before it, including the tokens the model wrote itself. Hence "generative" and "autoregressive". Note that the model can't take a token back once it has drawn it. With seed 1, the loop draws "1921" for the TUM sentence, one of the flat candidates from 2.4, and then goes on as if it were fact.
 
 ### 2.6 Same prompt, different answers
 - Two or three continuations of the same prompt with different seeds.
@@ -163,11 +163,11 @@ Concepts introduced: pre-training, base model, training data as the source of th
 > Notes: Pre-training is only next-token prediction on a huge amount of text. The model gets better when it gives the true next token a higher probability. Nothing else: no "facts" table, no rules of grammar, no notion of truth. But to predict the next token well, the model has to pick up a lot about the world. That is why a pure next-token predictor seems to "know" things.
 
 ### 4.2 Common is not the same as true `[DEMO]`
-- A prompt where the most common continuation in text is wrong. Candidates: "The capital of Australia is" (Sydney vs. Canberra), "Humans use only 10% of their" (brain), "The Great Wall of China is visible from".
+- "The capital of Australia is": Canberra 72%, Sydney 5%, Melbourne 1%.
 - Demo: `show_top(base, ...)`.
 
-> Notes: Plant the idea here, show it in full in Part 6: the distribution reflects what is frequent in the training text, not what is true. If a misconception is common, it gets probability. Keep to about a minute.
-> To test: which of the candidates shows the effect on OLMo 2 1B base.
+> Notes: Plant the idea here, show it in full in Part 6: the distribution reflects what is frequent in the training text, not what is true. If a misconception is common, it gets probability. Here the model gives the highest probability to the right answer, Canberra, but it also gives a significant share to Sydney, the common mistake: about one sampled answer in twenty. Keep to about a minute.
+> Stronger alternatives, if wanted (tested on OLMo 2 1B base, the myth wins): "Bulls get angry when they see the color" → " red" 72%; "The Great Wall of China is the only man-made structure visible from" → " space" 53%; "We lose most of our body heat through our" → " head" 47% + " heads" 27%.
 
 ### 4.3 A base model continues documents `[DEMO]`
 - Give the base model a plain question. It doesn't answer; it continues with more questions, a list, or a forum page.
@@ -244,19 +244,20 @@ Concepts used: everything before. New: confidence vs. correctness, information i
 > Notes: The probability measures "how common is this continuation", not "how true". A wrong answer can be very likely. This is the point planted in 4.2.
 
 ### 6.5 Put the answer into the context `[DEMO]`
-- Prompt: a list of Nobel Prize in Physics winners per year (e.g., 1945–1960), then the 1951 question.
-- Demo: the same `attention_viewer` on the aligned model. While it writes the name, attention goes to the "1951" line of the list. The answer: Cockcroft and Walton.
+- Prompt: a list of Nobel Prize in Physics winners per year (1945–1960, 16 lines, about 230 tokens), then the 1951 question.
+- Demo: the same `attention_viewer` on the aligned model. While it writes the name, attention goes to the "1951" line of the list (head 12.7: 68% on that line, 15% on the next best). The answer: Cockcroft and Walton; the first name " John" at 99%, against 2.8% without the list.
 - Slide picture: 6.3 and 6.5 side by side; the attention view with the list line highlighted.
 
 > Notes: Same model, same question, same viewer. Now the information is in the context window, and attention lets the model use it: the "Cockcroft" position attends to the matching list entry. The model no longer has to recall; it copies. This is the most important practical lesson of the lecture: give the model the information it needs.
-> To test: whether the 1B model finds the line reliably, and how long the list can be.
+> Caveats (tested, `demos/context_list.py`): 1951 is a good year for the 1B model; over all 16 years of the list it gets only 9 first names right, and most misses copy the neighbouring line (1947 → the 1946 winner). With the longer list (1915–1960, 46 lines) it gets 14 of 40 years, 1951 still right. If asked: larger models do this reliably (Llama 3.1 8B: 40 of 40). The greedy answer adds a reason, "the creation of the first artificial radio wave", that is not in the list and is invented (correct: transmutation of atomic nuclei by artificially accelerated particles). Worth pointing out: the model copies what is in the context and makes up what isn't.
 
 ### 6.6 More context is not free
 - Figure: the "lost in the middle" U-curve (Liu et al., *Lost in the Middle*, TACL 2024): retrieval accuracy vs. the position of the relevant document; high at the start and the end, low in the middle.
 - Optional: "context rot" (Chroma, 2025): performance drops as the context grows, even on simple tasks.
 - Pointer: Exercise N, hide the needle yourself.
 
-> Notes: Attention has to spread over everything in the context. With a lot of irrelevant text, the relevant piece gets lost, especially in the middle. (The bank head in 3.3 lost "fishing rod" after a long detour.) Practical rule for agentic coding: keep the context focused. Compact long sessions, start a fresh session for a new feature.
+> Notes: Attention has to spread over everything in the context. With a lot of irrelevant text, the relevant piece gets lost, especially in the middle. (The bank head in 3.3 lost "fishing rod" after a long detour; the 1B model's list answers in 6.5 get worse as the list grows.) Practical rule for agentic coding: keep the context focused. Compact long sessions, start a fresh session for a new feature.
+> Caveat: we could not reproduce the U-curve with a synthetic needle (a made-up code word in filler text) on either OLMo 2 1B (up to 3.5k tokens) or Llama 3.1 8B (up to 32k tokens); both find it almost always, with only a slight dip in the middle at the longest lengths. Current models are trained on such tests; the effect shows on long, realistic contexts and harder tasks. So show the published figure, and don't claim it live. Details: `docs/model_findings.md`.
 
 ### 6.7 Who puts the information there?
 - Diagram: the model's context window, with the information coming from: you (pasting), or a program (a search, a file read, a calculator).
@@ -316,9 +317,11 @@ Slides moved out of the main line. Use them for questions, or if time is left.
 - `show_confidence` on the TUM founding year (correct, green) and the Mössbauer question (wrong, "Wolfgang Pauli" at 75%; correct: Heinz Maier-Leibnitz). Also a candidate for Exercise 3.
 
 ### B.8 The context beats memory `[DEMO]`
-- The Nobel list from 6.5 with a wrong entry for 1951 (a made-up name). The model answers with the made-up name.
+- The Nobel list from 6.5 with a wrong entry for 1951 (a made-up name, "Heinrich Vogel"). After "The Nobel Prize in Physics in 1951 was awarded to", the model puts 78% on " Heinrich" and 0.1% on " John".
+- The same for 1921: " Heinrich" 42%, " Albert" 0.2%.
 
 > Notes: The model follows the context, even against what it "knows". That is a feature (up-to-date documentation, your own code) and a risk (wrong or outdated documents, text written to mislead the model). Candidate for Lecture 2 (untrusted file contents) or an exercise.
+> Caveat (tested, `demos/context_beats_memory.py`): show the probabilities after the fixed start, not a free answer. Answering freely, the 1B model doesn't copy the fake name; it picks a neighbouring line (Felix Bloch for 1951). Llama 3.1 8B copies the fake name for 1951, but for 1921 it pushes back ("…Albert Einstein, not Heinrich Vogel…"): weak knowledge gives way to the context, strong knowledge resists.
 
 ---
 
@@ -328,13 +331,8 @@ Slides moved out of the main line. Use them for questions, or if time is left.
 | --- | --- | --- |
 | 2 Sampling lab: temperature, top-p | Part 2 | Built |
 | 3 Confidently wrong | Part 6 | To build |
-| N Needle in a haystack: hide a fact in more and more text, at different positions, and see where retrieval breaks | Part 6.5–6.6 | New idea |
+| N Growing list: ask the 1B model about years in a longer and longer Nobel list and watch the answers degrade (a synthetic needle is too easy, see `docs/model_findings.md`) | Part 6.5–6.6 | New idea |
 
 ## Open questions
 
-- **"Common is not true" (4.2).** Which prompt shows it on OLMo 2 1B base? "The capital of Australia is" gives Canberra 72%, Sydney only 5%.
-- **TUM bar chart (2.4).** The top token is `' '` (87%): the tokenizer splits years into a space and digits. Either explain it (it fits 2.2) or end the prompt so that the next token is a word. The hand-sampled loop (2.5, seed 1) drew "1921", a nice wrong year.
-- **Context demo (6.5, B.8).** Can the 1B aligned model find the 1951 line in a list, and with which list length? Fallback: the API model with `show_confidence` (no attention view).
-- **Lost in the middle on OLMo 2 1B.** Its context is only 4,096 tokens, and the U-curve may not appear; the model may also fail everywhere. Test before designing the exercise. Fallback: run the exercise on the API model with a few long requests (watch the rate limit).
-- **Notebook order.** The notebook still follows the old outline; reorder it once the plan is settled.
 - **Check the numbers:** ChatGPT user numbers, agent release dates, OLMo 2 1B training tokens, the API model's context length.

@@ -143,12 +143,12 @@ def api_tokenizer():
 last_request = 0.0
 
 
-def api(endpoint, **kw):
-    """One request to the API model. SAIA allows 10 requests per 10 s per key, so we wait 1 s between requests."""
+def api(endpoint, model=API_MODEL, **kw):
+    """One request to an API model. SAIA allows 10 requests per 10 s per key, so we wait 1 s between requests."""
     global last_request
     time.sleep(max(0, last_request + 1 - time.time()))
     last_request = time.time()
-    return endpoint.create(model=API_MODEL, **kw)
+    return endpoint.create(model=model, **kw)
 
 
 def ask(user, max_tokens=300, temperature=0.0, **kw):
