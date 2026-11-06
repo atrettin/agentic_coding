@@ -253,6 +253,10 @@ Concepts used: everything before. New: confidence vs. correctness, information i
 
 ### 6.6 More context is not free
 - Figure: the "lost in the middle" U-curve (Liu et al., *Lost in the Middle*, TACL 2024): retrieval accuracy vs. the position of the relevant document; high at the start and the end, low in the middle.
+  - Main: [liu2023_u_curve.png](lit-figures/liu2023_u_curve.png) (paper Fig. 1; GPT-3.5, 20 documents, ~4k tokens; the middle drops below the closed-book baseline).
+  - Backup: [liu2023_qa_by_length.png](lit-figures/liu2023_qa_by_length.png) (Fig. 5; the same curve for 10/20/30 documents and several models).
+  - Backup, for the caveat below: [liu2023_kv_retrieval.png](lit-figures/liu2023_kv_retrieval.png) (Fig. 7; synthetic key-value retrieval: some models stay near 100 % at every position, others dip in the middle).
+  - Source (the figure files are not in the repo; the figure numbers above refer to this paper): N. F. Liu, K. Lin, J. Hewitt, A. Paranjape, M. Bevilacqua, F. Petroni, P. Liang, "Lost in the Middle: How Language Models Use Long Contexts", *Transactions of the Association for Computational Linguistics* 12, 157–173 (2024), [doi:10.1162/tacl_a_00638](https://doi.org/10.1162/tacl_a_00638); preprint [arXiv:2307.03172](https://arxiv.org/abs/2307.03172).
 - Optional: "context rot" (Chroma, 2025): performance drops as the context grows, even on simple tasks.
 - Pointer: Exercise N, hide the needle yourself.
 
