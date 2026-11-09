@@ -66,6 +66,21 @@ Scripts that reproduce the larger tests are in `demos/`.
   - 4 or 20 same-shaped distractors ("The code word for the kitchen door is walnut."): 7–10 of 10, no position pattern.
   - 20 distractors and a paraphrased question ("Which word opens the laboratory?"): 5–10 of 10, scattered.
 
+**Tool calling** (`demos/nobel_lookup.py`; database `demos/nobel_physics.csv`, from the Nobel Prize API, 6 November 2026)
+- The chat template has no tool role: a `tool` message is dropped without an error. The harness has to define the call format and return the result as ordinary text (we use a user turn: "Database row: …").
+- The template accepts a `<|system|>` block, but the model card's chat format has none, and the model ignores instructions there. Found by Alexandra Trettin, 9 November 2026.
+- Tool description ("To look up a year, write only lookup(YEAR)…") and "Who won the Nobel Prize in Physics in {year}?", 1915–1960 (40 years), free calls:
+  - Instruction in a system turn, with or without "Answer in one sentence.": 0 of 40 calls.
+  - Instruction in the user turn, with "Answer in one sentence.": 0 of 40.
+  - First-token probability of `lookup` for 1947, in the order system/one sentence, system, user/one sentence, user: 0.00%, 0.16%, 0.00%, 96%.
+  - Instruction in the user turn, without it: 40 of 40 calls with the right year; with the row in the context, the answer names a laureate of that year in 40 of 40 (short answers, often only the names). The whole list in the context, same question, same check: 16 of 40.
+  - "…in {year}, and for what?" instead: 38 of 40 calls (1917 and 1927 answer from memory).
+  - "…Look up the data first, then answer in a full sentence." appended to the question: 0 of 40 calls (P(`lookup`) 0.31% for 1947). The 1B model can't follow a chained instruction (found by Alexandra Trettin, 9 November 2026).
+  - The harness can add the second instruction when it returns the row: "Answer the question in a full sentence using the following information: {row}" instead of "Database row: {row}". 40 of 40 answers are full sentences that name a laureate and give the database's reason, some shortened or paraphrased (Planck: "…for his discovery of energy quanta"; Barkla: "X-ray" for "Röntgen"). Suggested by Alexandra Trettin, measured 9 November 2026.
+  - Off-topic questions in the working harness (instruction in the user turn): the model looks up anyway. Capital of Australia → `lookup(Australia)`, "No entry for Australia." → "Canberra". 12 * 13 → `lookup(12)` → "…so I cannot provide the answer". Who discovered the neutron? → `lookup(1931)` (not awarded) → "The neutron was not awarded the Nobel Prize in Physics in 1931." Chemistry 1911 → `lookup(1911)`, the Physics row → "Wilhelm Wien won the Nobel Prize in Chemistry in 1911…" (correct: Marie Curie). What did Edward Appleton discover? → `lookup(1903)` (the example year in the instruction). Haiku about neutrinos → no call, a haiku.
+  - A worked example exchange (1903) in front, with the instruction in a system turn and "Answer in one sentence.": still 0 calls.
+- Forced call (the harness writes `lookup(` and the model only fills in the year; instruction in a system turn, "Answer in one sentence."): right year in 40 of 40, right first laureate in 39 of 40 (the 1925 miss names Hertz only). The free call in the right document makes this unnecessary.
+
 ## Qwen3 30B-A3B Instruct 2507 (SAIA API)
 
 - About 160 tokens/s, no hidden reasoning, logprobs with `top_logprobs`, `n=` for several samples, and raw `/completions` without a template. Vocabulary 151,669 tokens; digits are single tokens.
@@ -77,6 +92,11 @@ Scripts that reproduce the larger tests are in `demos/`.
 - Wakanda (max_tokens=80): "Bakassa", then a "correction" to "Kahndaq" (a DC Comics country). Name tokens low probability.
 - 1234567 × 7654321 → 9449999999999 (correct: 9449772114007).
 - Raw `/completions` with "The capital of Australia is" → " Canberra." followed by a list of more capitals: without the template it behaves like a base model.
+- Tool calling works (`demos/tool_loop.py`), both by hand on raw `/completions` (a system prompt describing `<tool_call>{"name": "calc", …}</tool_call>`, stop at `</tool_call>`) and through the `tools` field of `/chat/completions`. The server writes Qwen's `# Tools` system block and `<tool_call>` tags, the same format as the hand-written version; the tool result goes back as a user turn with `<tool_response>`.
+- It decides by itself when to call: with a `lookup(year)` tool it calls once for one year, twice (in one turn) for "1951 and 1952", and not at all for "What is the capital of Australia?". Answers copy the database row.
+- Questions the `lookup` tool can't answer: no call in any case. 12 × 13 → 156, neutron → Chadwick, Appleton → the ionosphere ("I cannot provide information … based on the available tools. However, …"), Faust → Goethe with the same hedge. Chemistry 1911: "Marie Curie" in one run, a refusal ("None of the available functions can provide information…") in another.
+- `tool_choice="required"` works on SAIA. Forced to call the calculator for "What is the capital of Australia?", it calls `calc` with `"2 + 2"`.
+- Wrong arguments from memory: "…ten years after the transistor prize?" → `lookup(1957)` in two of two runs; it takes the 1947 invention as the prize year (the prize was 1956). "…the year after Albert Einstein won it?" → `lookup(1922)` in one run, `lookup(1923)` in another, both at temperature 0 (the 1921 prize was awarded in 1922): the API is not fully deterministic.
 
 ## Llama 3.1 8B Instruct (SAIA API)
 
