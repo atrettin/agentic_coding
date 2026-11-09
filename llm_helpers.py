@@ -8,6 +8,7 @@ import html
 import math
 import os
 import time
+from typing import Any, cast
 
 import ipywidgets as widgets
 import torch
@@ -26,7 +27,9 @@ API_MODEL = "qwen3-30b-a3b-instruct-2507"
 
 def load(name):
     # "eager" attention is slower than the default but can return attention weights (attention_viewer)
-    model = AutoModelForCausalLM.from_pretrained(name, dtype=torch.bfloat16, attn_implementation="eager").to(DEVICE)
+    model = cast(Any, AutoModelForCausalLM).from_pretrained(
+        name, torch_dtype=torch.bfloat16, attn_implementation="eager"
+    ).to(DEVICE)
     model.tok = AutoTokenizer.from_pretrained(name)  # each model has its own tokenizer
     return model
 
