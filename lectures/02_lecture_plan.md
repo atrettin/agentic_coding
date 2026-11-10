@@ -2,7 +2,7 @@
 
 Working draft, iteration 1.
 Each slide gives what the slide shows (pictures and examples, not text to read), and speaker notes.
-`[DEMO]` means a switch to the live notebook (`lectures/02_tools_and_agents.ipynb`; the scripts behind it are `demos/tool_loop.py` and `demos/nobel_lookup.py`) or, in Parts 5–6, to OpenCode.
+`[DEMO]` means a switch to the live notebook (`lectures/02_tools_and_agents.ipynb`; the Nobel Prize database behind Part 2 is `demos/nobel_lookup.py`) or, in Parts 5–6, to OpenCode.
 
 **Where the students should be at the end**
 
@@ -54,7 +54,7 @@ Concepts used: chat template, sampling, context. New: tool call, tool result, th
 > Notes: Nothing special: one paragraph of text that describes a format. We send the whole document to the raw `/completions` endpoint, so nothing is hidden. We tell the server to stop at `</tool_call>`.
 
 ### 1.2 The model writes the call `[DEMO]`
-- `by_hand()` in `demos/tool_loop.py`, step by step. The model's first output: `<tool_call>{"name": "calc", "arguments": {"expression": "1234567 * 7654321"}}`, then it stops.
+- In the notebook, one cell per step: we send the document, the server stops at `</tool_call>`. The model's first output: `<tool_call>{"name": "calc", "arguments": {"expression": "1234567 * 7654321"}}`, then it stops.
 
 > Notes: The model didn't multiply. It wrote text in the agreed format, because that is the most likely continuation of a document that offers a calculator and asks for a product. This is a Lecture 1 continuation, nothing else.
 
@@ -134,7 +134,7 @@ Concepts used: retrieval from the context (Lecture 1, 6.5–6.6), the chat templ
 ## Part 3 — Native tool calling (9 min)
 
 ### 3.1 The `tools` field `[DEMO]`
-- `native()` in `demos/tool_loop.py`: the same calculator as a JSON schema (name, description, parameters), sent with `/chat/completions`.
+- In the notebook: the same calculator as a JSON schema (name, description, parameters), sent with `/chat/completions`.
 - The response has no text, only `tool_calls: [{"name": "calc", "arguments": "{\"expression\": \"1234567 * 7654321\"}"}]`. We append a message with role `tool`.
 
 > Notes: This is how every real program does it. It looks like a different mechanism. It isn't.
