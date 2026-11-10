@@ -1,0 +1,13 @@
+%% Slide 5.1 The harness. Colours as in the notebook: user yellow, harness grey, model green, tool blue.
+flowchart TD
+  U([User: question]):::user --> H["Harness builds the context<br/><small>system prompt · tool descriptions · messages · results</small>"]:::harness
+  H --> M[Model]:::model
+  M -->|text| A([Answer]):::user
+  M -->|tool call| T[Harness runs the tool]:::harness
+  T --> R[Tool result]:::tool
+  R -->|into the context| H
+  classDef user fill:#FFF3B0,stroke:#C9A400,color:#222
+  classDef harness fill:#E6E6E6,stroke:#888,color:#222
+  classDef model fill:#D9F2D0,stroke:#3C9A2A,color:#222
+  classDef tool fill:#D6E6FF,stroke:#3A6FD8,color:#222
+  linkStyle default stroke:#7B2FF7,stroke-width:3px

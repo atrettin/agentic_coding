@@ -1,0 +1,13 @@
+%% Slide 8.1 Two lectures in one picture: the 5.1 loop, each part labelled with its lecture.
+flowchart TD
+  U([User: task]):::user --> H["Context<br/><small>conditions the model; less, relevant context works better</small><br/><b>L1, L2</b>"]:::harness
+  H --> M["Model samples tokens<br/><b>L1</b>"]:::model
+  M -->|text| A([Answer]):::user
+  M -->|tool call| T["Harness turns text into actions<br/><b>L2</b>"]:::harness
+  T --> R[Tool result]:::tool
+  R -->|"results into context (L2)"| H
+  classDef user fill:#FFF3B0,stroke:#C9A400,color:#222
+  classDef harness fill:#E6E6E6,stroke:#888,color:#222
+  classDef model fill:#D9F2D0,stroke:#3C9A2A,color:#222
+  classDef tool fill:#D6E6FF,stroke:#3A6FD8,color:#222
+  linkStyle default stroke:#7B2FF7,stroke-width:3px
