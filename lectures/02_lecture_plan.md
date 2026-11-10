@@ -394,15 +394,15 @@ Model: Qwen3.8 27B on SAIA (`qwen3.8-27b`).
 
 | Exercise | Deepens | Status |
 | --- | --- | --- |
-| 6 Build a tool loop: complete the harness (parse the call, run it, append the result) | Parts 1, 4 | To build (`demos/olmo_calc.py` and `demos/tool_loop.py` are solutions) |
-| 7 Context window trap: questions about a long text, then with a search tool | Part 2 | To build |
-| 8 Agentic coding in our exercise repo: plan, iterate, implement one feature | Parts 6, 7 | To build |
-| 9 Write an `AGENTS.md`, one skill and one review agent for the exercise repo; check that the skill is loaded when it should be | Part 6 | New idea |
-| 10 Give OpenCode the Nobel database: a custom tool `lookup` that runs a Python script with the year | Parts 2, 6 | New idea |
+| 1 (Tasks 6–8, bonus) A letter counter for Qwen: students write the system prompt around a given `count_letter()`; bonus: an optional `ignore_case` (`exercises/01_llms_and_tools.ipynb`, reference `demos/letter_tool.py`) | Part 4.1 | Built |
+| 2 OpenCode on `exercises/weather_station/`: fix a bug from its symptom (plan, then build), `AGENTS.md` with conventions, the same feature with and without it, a custom tool `data_summary`, a skill `monthly-report`, a subagent `convention-reviewer` (`exercises/02_opencode.md`, reference `demos/weather_solution/`) | Parts 6, 7 | Built |
+| – Build a tool loop: complete the harness (parse the call, run it, append the result) | Parts 1, 4 | Idea (`demos/olmo_calc.py` and `demos/tool_loop.py` are solutions) |
+| – Context window trap: questions about a long text, then with a search tool | Part 2 | Idea |
+| – Give OpenCode the Nobel database: a custom tool `lookup` that runs a Python script with the year | Parts 2, 6 | Idea |
 
 ## Open questions
 
-- **Demo repo for Parts 6–7:** not built yet. Needs tests, a helper module, one small feature to add, and `.opencode/tools/` with `calc.py` and `calc.ts` from `demos/opencode_tools/` (6.2). The script path uses `context.worktree` (the git root), so the demo repo must be its own git repository.
+- **Demo repo for Parts 6–7:** `exercises/weather_station/` (Exercise 2) could serve; it has tests, a bug and a feature to add, but no `calc` tool yet. Otherwise not built yet. Needs tests, a helper module, one small feature to add, and `.opencode/tools/` with `calc.py` and `calc.ts` from `demos/opencode_tools/` (6.2). The script path uses `context.worktree` (the git root), so the demo repo must be its own git repository.
 - **OpenCode model:** Qwen3.8 27B "works in practice" but this plan's demos are not tested with it yet; `qwen3-coder-next` is untested. Check the rate limits (10 requests per 10 s) during a live session.
 - **Course plan:** the Lecture 2 table in the course plan has a "context window" segment (a truncated document). This plan replaces it with the Nobel database (Part 2); update the course plan if this holds.
 - **Cut candidates (if time gets short):**

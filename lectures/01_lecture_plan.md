@@ -112,7 +112,7 @@ Two slides.
 
 ### 2.6 Same prompt, different answers
 - The TUM prompt; sampling is random. "Greedy" sampling: always pick the most likely token (perfectly predictable, but boring and tends to fall into loops).
-- Two knobs on the draw: temperature (sharpens or flattens the distribution), top-p (cuts off the unlikely tail) → Exercise 2.
+- Two knobs on the draw: temperature (sharpens or flattens the distribution), top-p (cuts off the unlikely tail) → Exercise 1.
 - Demo: rerun `generate_by_hand` with seed 2 and 3.
 
 > Notes: Because we draw, the same prompt gives different texts. Greedy decoding (always the most likely token) is repeatable but often boring or repetitive. Temperature sharpens or flattens the distribution; top-p cuts off the unlikely tail. The details are in the exercise.
@@ -347,7 +347,7 @@ Slides moved out of the main line. Use them for questions, or if time is left.
 (B.6, "The assistant is a role", is no longer in the deck; the numbering is kept.)
 
 ### B.7 Confidently wrong in green `[DEMO]`
-- `show_confidence` on the TUM founding year (correct, green) and the Mössbauer question (wrong, "Wolfgang Pauli" at 75%; correct: Heinz Maier-Leibnitz). Once "Wolfgang" is drawn, "Pauli" follows with near certainty. Also a candidate for Exercise 3.
+- `show_confidence` on the TUM founding year (correct, green) and the Mössbauer question (wrong, "Wolfgang Pauli" at 75%; correct: Heinz Maier-Leibnitz). Once "Wolfgang" is drawn, "Pauli" follows with near certainty. Also a candidate for an exercise.
 
 ### B.8 The context beats memory `[DEMO]`
 - The Nobel list from 6.5 with a wrong entry for 1951 (a made-up name, "Heinrich Vogel"). After "The Nobel Prize in Physics in 1951 was awarded to", the model puts 78% on " Heinrich" and 0.1% on " John".
@@ -362,8 +362,8 @@ Slides moved out of the main line. Use them for questions, or if time is left.
 
 | Exercise | Deepens | Status |
 | --- | --- | --- |
-| 2 Sampling lab: temperature, top-p | Part 2 | Built |
-| 3 Confidently wrong | Part 6 | To build |
+| 1 Tokens, sampling, and a tool by hand (`exercises/01_llms_and_tools.ipynb`; the sampling tasks are the former Exercise 2) | Parts 2–3 | Built |
+| – Confidently wrong | Part 6 | To build |
 | N Growing list: ask the 1B model about years in a longer and longer Nobel list and watch the answers degrade (a synthetic needle is too easy, see `docs/model_findings.md`) | Part 6.5–6.6 | New idea |
 
 ## Open questions

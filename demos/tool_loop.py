@@ -26,8 +26,10 @@ def calc(expression):
     return str(eval(expression))
 
 
-def by_hand(question=QUESTION):
-    doc = (f"<|im_start|>system\n{SYSTEM}<|im_end|>\n<|im_start|>user\n{question}<|im_end|>\n<|im_start|>assistant\n")
+def by_hand(question=QUESTION, system=SYSTEM, functions=None):
+    """functions: the tools by name; default: the calculator."""
+    functions = functions or {"calc": calc}
+    doc = (f"<|im_start|>system\n{system}<|im_end|>\n<|im_start|>user\n{question}<|im_end|>\n<|im_start|>assistant\n")
     for _ in range(5):
         r = api(client().completions, prompt=doc, max_tokens=200, temperature=0, stop=["</tool_call>", "<|im_end|>"])
         text = r.choices[0].text
@@ -35,7 +37,7 @@ def by_hand(question=QUESTION):
         if "<tool_call>" not in text:
             return doc  # no tool call: the model has answered
         call = json.loads(text.split("<tool_call>")[1])
-        result = calc(**call["arguments"])
+        result = functions[call["name"]](**call["arguments"])
         doc += (f"</tool_call><|im_end|>\n<|im_start|>user\n<tool_response>\n{result}\n</tool_response><|im_end|>\n"
                 "<|im_start|>assistant\n")
     return doc

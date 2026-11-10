@@ -114,6 +114,20 @@ Scripts that reproduce the larger tests are in `demos/`.
 - With no custom tool, it ran `python3 -c "print(...)"` through `bash` (2 of 2 runs).
 - OpenCode installs `@opencode-ai/plugin` into `.opencode/` by itself.
 
+**Exercise 2 on `exercises/weather_station/`** (`opencode run`, default permissions, 10 November 2026; the instructor's global skills and agents were installed too):
+- Bug from the symptom only ("…July 2025 comes out as −49.4 °C. That can't be right. Find out why and fix it."), 2 runs, about 3 min each: both found the `-999` marker in `tmin` and fixed `clean()` for all three columns. Run 1 added a regression test (`test_clean_tmin`); run 2 didn't, but mentioned the March 2024 precipitation (−925.5 mm). The guide asks for the test in the plan step.
+- `/init` on the unfixed project (1 run): an 18-line `AGENTS.md` with commands, the `pythonpath` setting and the data columns, but no docstring or test convention, so Task 2 still has something to add. It ran `data_summary.py` (then shipped in the project) and wrote the `-999` bug into the file. So `data_summary.py` now stays out of the project until Task 4 (`exercises/data_summary.py`), and the bug fix comes before `/init`.
+- `heat_waves`, same prompt, 1 run each. Without `AGENTS.md`: a one-line docstring (copies the existing style), no tests. With the reference `AGENTS.md` (`demos/weather_solution/`): a numpy docstring with units and 5 tests on hand-made data (min length, strict `>`, NaN, a date gap). Both found the two planted heat waves.
+- Custom tool `data_summary` (no instruction to use it), "Which columns … have missing values, and on which days?": called in 2 of 2 runs, correct answer.
+- Skill `monthly-report`: loaded for "Write a report for July 2025." and the report matches the format; not loaded for "What does the anomaly function return?" (1 run each).
+- Subagent `convention-reviewer` (`edit: deny`, bash only `git diff*`/`git status*`) on the no-`AGENTS.md` `heat_waves` diff: found both problems (one-line docstring, no test), noted `data/` untouched, edited nothing.
+
+## Qwen3 30B-A3B: letter counter by hand (Exercise 1, `demos/letter_tool.py`, 10 November 2026)
+
+- Without a tool, "How many times does the letter s occur in the word Donaudampfschifffahrtsgesellschaftskapitän? Answer with a number only." → 11 (2 of 2; correct: 5). Without "Answer with a number only." it spells the word letter by letter and doesn't finish within 1,500 tokens.
+- System prompt with `<tool_call>{"name": "count_letter", "arguments": {"word": "...", "letter": "..."}}</tool_call>` (the 4.1 calculator prompt, adapted), through `tool_loop.by_hand()`, 6 questions × 2 runs: right call every time; no call for the capital of Australia. 11 of 12 answers right: once the tool returned 9 and the model wrote 10.
+- "How many a's, upper or lower case, are in the word Aachen?" without `ignore_case`: the tool returns 1, the model answers 2 anyway ("case-insensitive"): it overrides the tool from its own reading. With `ignore_case` described in the prompt (bonus), it sets `"ignore_case": true` for Aachen, but also for most other questions, where it does no harm. 12 of 12 right.
+
 ## Llama 3.1 8B Instruct (SAIA API)
 
 - Without a system prompt, it starts answers with an invented tool call, e.g. `tool.call('geography.getCapital', 'Australia')` before the answer. Any system prompt ("You are a helpful assistant.") fixes it. `demos/api_retrieval.py` always sends one.

@@ -41,4 +41,8 @@ python3 -m venv .venv
 - `demos/nobel_physics.csv`: all Physics Nobel Prizes 1901–2025 (year, laureates, motivation), from the Nobel Prize API
 - `docs/model_findings.md`: what we found out about the models we tried, including the ones we didn't use
 - `exercises/00_template.ipynb`: template and conventions for new exercises
-- `exercises/02_sampling_lab.ipynb`: temperature and top-p
+- `exercises/01_llms_and_tools.ipynb`: tokens, sampling (temperature, top-p), a letter-counting tool for Qwen written by hand
+- `exercises/02_opencode.md`: OpenCode on the example project: fix a bug, `AGENTS.md`, a custom tool, a skill, a review agent
+- `exercises/data_summary.py`: the script students copy into the project in Exercise 2, Task 4
+- `exercises/weather_station/`: the example project for Exercise 2 (students copy it out of the repo); its data come from `demos/make_weather_data.py`
+- `demos/weather_solution/`: reference solutions for Exercise 2
