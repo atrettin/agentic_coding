@@ -68,6 +68,22 @@ def show_template(messages, tools=TOOLS):
     print(api_tokenizer().apply_chat_template(msgs, tools=tools, tokenize=False))
 
 
+def robustness():
+    """The instructions that break the 1B model's calls (olmo_calc.py, nobel_lookup.py) don't break this model's."""
+    from nobel_lookup import lookup
+    lookup_tool = [{"type": "function", "function": {
+        "name": "lookup", "description": "Look up the Nobel Prize in Physics of one year in a database.",
+        "parameters": {"type": "object", "properties": {"year": {"type": "integer"}}, "required": ["year"]}}}]
+    both, functions = TOOLS + lookup_tool, {"calc": calc, "lookup": lookup}
+    q = "Who won the Nobel Prize in Physics in 1947?"
+    for question in [QUESTION + " Answer with the number only.", QUESTION + " Answer in one sentence.",
+                     q + " Answer in one sentence.", q + " Look up the data first, then answer in a full sentence.",
+                     "What is the capital of Australia?", "Write a haiku about neutrinos."]:
+        messages = native(question, both, functions)
+        calls = [f"{c['function']['name']}({c['function']['arguments']})" for m in messages for c in m.get("tool_calls", [])]
+        print(f"{question}\n   calls: {calls}\n   answer: {messages[-1]['content'][:100]!r}")
+
+
 if __name__ == "__main__":
     print("Without a tool:", api(client().chat.completions, messages=[{"role": "user", "content": QUESTION}],
                                 max_tokens=100, temperature=0).choices[0].message.content)
