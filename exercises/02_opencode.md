@@ -40,7 +40,20 @@ Check with `opencode --version`.
         "apiKey": "{env:SAIA_API_KEY}"
       },
       "models": {
-        "qwen3.8-27b": { "name": "Qwen 3.8 27B" }
+        "qwen3.8-27b": {
+          "name": "Qwen 3.8 27B",
+          "variants": {
+            "low": {
+              "reasoningEffort": "low"
+            },
+            "medium": {
+              "reasoningEffort": "medium"
+            },
+            "xhigh": {
+              "reasoningEffort": "xhigh"
+            }
+          }
+        }
       }
     }
   },
