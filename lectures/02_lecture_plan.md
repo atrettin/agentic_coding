@@ -203,6 +203,7 @@ Concepts used: prompting as conditioning, the chat template. New: why a model ha
 ### 5.2 What an agent is
 - "Agent = model + harness + tools, in a loop until the task is done."
 - What the harness decides: which tools exist, what goes into the context and when, which calls need permission, when to stop.
+- Diagram (`lectures/figures/loop_agent.mmd`): the loop until the task is done, with the four decisions where they happen: the context box (what goes in, step limit), the model (sees only the tools that exist), "Harness: permitted?" between the call and the tool (a refusal goes back into the context).
 
 > Notes: "Agent" is no new kind of model. A coding agent is the loop from 4.3 with tools that read files, edit files and run commands. The quality depends on the model *and* on what the harness puts into the context.
 

@@ -1,0 +1,14 @@
+%% Slide 5.2 What an agent is: the loop until the task is done, with the four decisions of the harness where they happen.
+flowchart TD
+  U([User: task]):::user --> H["Harness builds the context<br/><small>what goes in, and when · stops after N steps</small>"]:::harness
+  H --> M["Model<br/><small>sees only the tools that exist</small>"]:::model
+  M -->|"no tool call"| D([Task done]):::user
+  M -->|tool call| P["Harness: permitted?"]:::harness
+  P -->|yes| T[Tool runs]:::tool
+  T -->|result into the context| H
+  P -.->|"no: refusal into the context"| H
+  classDef user fill:#FFF3B0,stroke:#C9A400,color:#222
+  classDef harness fill:#E6E6E6,stroke:#888,color:#222
+  classDef model fill:#D9F2D0,stroke:#3C9A2A,color:#222
+  classDef tool fill:#D6E6FF,stroke:#3A6FD8,color:#222
+  linkStyle default stroke:#7B2FF7,stroke-width:3px

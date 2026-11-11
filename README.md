@@ -37,6 +37,7 @@ python3 -m venv .venv
 - `lectures/01_what_an_llm_does.ipynb`: Lecture 1 live demos, in the order of the slide plan
 - `lectures/02_lecture_plan.md`: Lecture 2 slide plan (tool calling, harnesses, OpenCode)
 - `lectures/02_tools_and_agents.ipynb`: Lecture 2 live demos (tool calling by hand and native, the Nobel database)
+- `lectures/figures/`: slide figures; `make_lecture*_figures.py` for the plots, `render_diagrams.py` renders the Mermaid diagrams (`*.mmd`) with mermaidx, without a browser
 - `demos/`: scripts for developing the larger demos outside the notebook (attention, retrieval from the context, tool calling)
 - `demos/nobel_physics.csv`: all Physics Nobel Prizes 1901–2025 (year, laureates, motivation), from the Nobel Prize API
 - `docs/model_findings.md`: what we found out about the models we tried, including the ones we didn't use
